@@ -1,0 +1,13 @@
+name: web
+version: 0.1.0
+
+authors:
+  -  <>
+
+targets:
+  web:
+    main: src/web.cr
+
+crystal: 0.24.1
+
+license: MIT
