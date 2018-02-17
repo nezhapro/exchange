@@ -60,6 +60,39 @@ get "/register" do
   render "src/views/register.ecr","src/views/layouts/base.ecr"
 end
 
+post "/api/register" do |env|
+  username = env.params.body["username"].as(String)
+  password = env.params.body["password"].as(String)
+
+  msg=""
+  err=false
+
+  DB.open "sqlite3://../db" do |db|
+    sql="select id,username,password from users where username='#{username}'"
+
+    int=0
+    db.query sql do |rs|
+      #puts "#{rs.column_name(0)} #{rs.column_name(1)} #{rs.column_name(2)}"
+      rs.each do
+        int+=1
+        #puts "#{rs.read(Int32)} #{rs.read(String)} #{rs.read(String)}"
+      end
+    end
+    if int==0
+
+      sql="INSERT INTO users(username, password, avatar, `role`, location, bio, money)VALUES('#{username}', '#{password}', '', '', '', '', 1000);"
+      db.exec sql
+      puts sql
+      msg="注册成功请登录"
+    else
+      err=true
+      msg="此帐号已经被注册"
+    end
+  end
+  env.response.content_type = "application/json"
+  {err: err,msg: msg,username: "#{username}", password: "#{password}"}.to_json
+end
+
 get "/about" do
   title="关于"
   render "src/views/about.ecr","src/views/layouts/base.ecr"

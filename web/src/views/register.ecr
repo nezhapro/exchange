@@ -1,9 +1,27 @@
 <h1>注册</h1>
-<p class="summary">麻麻说，有了帐号就可以交易了呢～</p>
+<p class="summary" id="msg">麻麻说，有了帐号就可以交易了呢～</p>
 <!--
 <p class="summary">目前不开放注册，请找有帐号的人邀请。</p>
 <p class="summary">或发邮件到i@nezha.pro取得随机登录密码</p>-->
-<p><input type="text" name="username" value="" placeholder="账户"></p>
-<p><input type="text" name="userpass" value="" placeholder="密码"></p>
-<button class="button">立刻登录</button>
+<p><input type="text" id="username" name="username" value="" placeholder="账户"></p>
+<p><input type="text" id="password" name="password" value="" placeholder="密码"></p>
+<button id="reg" class="button">注册</button>
 <a class="button" href="/">返回首页</a>
+<script type="text/javascript">
+  $('#reg').click(function(){
+    var username=$('#username').val();
+    var password=$('#password').val();
+
+    $.post("/api/register",{username:username,password:password},function(json) {
+      if(json.err){
+        $('#msg').text(json.msg);
+      }else{
+        if(json.msg=="注册成功请登录"){
+          alert(json.msg)
+          window.location.href="/login";
+        }
+      }
+      console.log(json);
+    });
+  });
+</script>
