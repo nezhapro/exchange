@@ -1,6 +1,26 @@
 <h1>登录</h1>
-<p class="summary"></p>
-<p><input type="text" name="username" value="" placeholder="账户"></p>
-<p><input type="text" name="userpass" value="" placeholder="密码"></p>
-<button class="button">立刻登录</button>
-<a class="button" href="/register">没有帐号？</a>
+<p class="summary" id="msg">麻麻说，登录了才能用呢～</p>
+<p><input type="text" id="username" name="username" value="" placeholder="账户"></p>
+<p><input type="text" id="password" name="password" value="" placeholder="密码"></p>
+<button id="reg" class="button">登录</button>
+<a class="button" href="/">返回首页</a>
+<script type="text/javascript">
+  $('#reg').click(function(){
+    var username=$('#username').val();
+    var password=$('#password').val();
+    $.post("/api/login",{username:username,password:password},function(json) {
+      if(json.err){
+        $('#msg').text(json.msg);
+      }else{
+        if(json.msg=="登录成功"){
+          alert(json.msg)
+          window.location.href="/home";
+        }
+        if(json.msg=="密码错误"){
+          alert(json.msg)
+        }
+      }
+      console.log(json);
+    });
+  });
+</script>

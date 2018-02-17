@@ -55,6 +55,46 @@ get "/login" do
   render "src/views/login.ecr","src/views/layouts/base.ecr"
 end
 
+post "/api/login" do |env|
+  username = env.params.body["username"].as(String)
+  password = env.params.body["password"].as(String)
+
+  msg=""
+  err=false
+
+  DB.open "sqlite3://../db" do |db|
+    sql="select id,password from users where username='#{username}'"
+
+    int=0
+    msg=""
+    user_password=""
+    db.query sql do |rs|
+      #puts "#{rs.column_name(0)} #{rs.column_name(1)} #{rs.column_name(2)}"
+      rs.each do
+        int+=1
+        user_id=rs.read(Int32)
+        user_password=rs.read(String)
+      end
+    end
+    if int==1
+      err=false
+      if user_password==password
+        msg="登录成功"
+      else
+        err=true
+        msg="密码错误"
+      end
+    else
+      err=true
+      msg="用户不存在！"
+    end
+
+  end
+  env.response.content_type = "application/json"
+  {err: err,msg: msg}.to_json
+end
+
+
 get "/register" do
   title="注册"
   render "src/views/register.ecr","src/views/layouts/base.ecr"
@@ -90,7 +130,7 @@ post "/api/register" do |env|
     end
   end
   env.response.content_type = "application/json"
-  {err: err,msg: msg,username: "#{username}", password: "#{password}"}.to_json
+  {err: err,msg: msg}.to_json
 end
 
 get "/about" do
